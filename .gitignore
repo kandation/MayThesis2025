@@ -1,5 +1,21 @@
 **/outputs/**
 **/__pycache__/**
+*.png
+*.csv
+*.docx
+*.json
+
+# ถ้ามีไฟล์ png และ csv ใน subfolder ด้วย ให้ใส่แบบนี้ด้วย
+**/*.png
+**/*.csv
+**/*.docx
+**/*.json
+
+# จากนั้น ignore โฟลเดอร์ที่ไม่ต้องการ
+outputs/
+__pycache__/
+logs/
+
+# ไฟล์ Python compiled
 *.py[cod]
 *$py.class
-**/logs/**

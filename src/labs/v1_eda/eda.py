@@ -10,7 +10,7 @@ from scipy import stats
 sns.set_style("whitegrid")
 
 # %% Load Dataset
-uri = r"E:\MayThesis2025\cleanned_datasets\(37t)ศาลหลักเมือง(ปิดสถานี).csv"
+uri = "/mnt/e/MayThesis2025/src/labs4/v02_merge/output/banhuafai.csv"
 df = pd.read_csv(uri, parse_dates=["Datetime"])  # Replace with your dataset
 # set datetime as index
 df.set_index("Datetime", inplace=True)
