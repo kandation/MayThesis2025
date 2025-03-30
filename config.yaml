@@ -1,0 +1,9 @@
+data_dir: "E:\\MayThesis2025\\cleanned_datasets"  # Still OS-specific, but centralized
+filename: "(37t)ศาลหลักเมือง(ปิดสถานี).csv"
+target_col: "SO2"
+top_k_features: 5
+look_back: 24
+epochs: 50
+batch_size: 2048
+test_size: 0.2
+random_state: 42

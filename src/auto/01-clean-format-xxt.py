@@ -69,6 +69,9 @@ def prepare_data(file_path):
     df.reset_index(inplace=True)
     df.rename(columns={"index": "Datetime"}, inplace=True)
 
+    # Drop empty columns
+    df.dropna(axis=1, how="all", inplace=True)
+
     # except Exception as e:
     #     print(f"Error processing {file_path}: {e}")
 
@@ -88,7 +91,6 @@ updated_uris = [current_dir_path / uri for uri in uris]
 dfs = []
 for uri in updated_uris:
     dfs.append(prepare_data(uri))
-    break
 
 
 output_dir = current_dir_path / "cleanned_datasets"

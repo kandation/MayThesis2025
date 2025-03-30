@@ -12,3 +12,4 @@ fastparquet==2024.5.0
 pyarrow==17.0.0
 papermill==2.6.0
 shap==0.46.0
+python-docx

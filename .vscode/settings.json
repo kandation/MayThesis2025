@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "./src/auto/a02_training_337t"
+    ]
+}
