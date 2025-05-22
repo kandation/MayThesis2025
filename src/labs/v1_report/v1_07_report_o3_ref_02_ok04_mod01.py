@@ -1385,6 +1385,8 @@ class DynamicInputDataset:
 
 
 if __name__ == "__main__":
-    input_directory = "/mnt/e/MayThesis2025/src/labs4/s02_v01_02_clean/output"
+    input_directory = (
+        "/mnt/e/MayThesis2025/src/labs4/s02_v01_02_clean/output-680507-2319"
+    )
     processor = DynamicInputDataset(input_directory)
     processor.run()

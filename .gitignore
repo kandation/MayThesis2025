@@ -19,3 +19,6 @@ logs/
 # ไฟล์ Python compiled
 *.py[cod]
 *$py.class
+
+*.zip
+*.h5

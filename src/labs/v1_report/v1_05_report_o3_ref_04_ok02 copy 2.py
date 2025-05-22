@@ -154,9 +154,7 @@ class DynamicInputDataset:
         for col, (min_val, max_val) in valid_ranges.items():
             if col in df_cleaned.columns:
                 # Set values outside range to NaN
-                df_cleaned.loc[
-                    (df_cleaned[col] < min_val) | (df_cleaned[col] > max_val), col
-                ] = np.nan
+                df_cleaned.loc[(df_cleaned[col] < min_val) | (df_cleaned[col] > max_val), col] = np.nan
 
                 # For WD, ensure values wrap around 360°
                 if col == "WD":
@@ -281,9 +279,7 @@ class DynamicInputDataset:
 
         print("Step 5.1: Listing Columns (Before)...")
         doc.add_heading(f"Columns List (Before) - {file_name}", 2)
-        doc.add_paragraph(
-            f"List of columns in the dataset before processing ({file_name}):"
-        )
+        doc.add_paragraph(f"List of columns in the dataset before processing ({file_name}):")
         for col in df.columns:
             doc.add_paragraph(f"- {col}")
 
@@ -302,9 +298,7 @@ class DynamicInputDataset:
         doc.add_paragraph(str(info_output_before))
 
         print("Step 6: Performing EDA (Before Any Processing)...")
-        doc.add_heading(
-            f"Exploratory Data Analysis (Before Any Processing) - {file_name}", 1
-        )
+        doc.add_heading(f"Exploratory Data Analysis (Before Any Processing) - {file_name}", 1)
         doc.add_paragraph(f"Shape: {df.shape}")
         doc.add_paragraph(f"Missing Values Total: {df.isnull().sum().sum()}")
 
@@ -321,19 +315,13 @@ class DynamicInputDataset:
         plt.close()
 
         nan_count_before_all = df.isnull().sum().sum()
-        nan_max_col_before_all = (
-            df.isnull().sum().idxmax() if nan_count_before_all > 0 else "None"
-        )
-        nan_max_val_before_all = (
-            df.isnull().sum().max() if nan_count_before_all > 0 else 0
-        )
+        nan_max_col_before_all = df.isnull().sum().idxmax() if nan_count_before_all > 0 else "None"
+        nan_max_val_before_all = df.isnull().sum().max() if nan_count_before_all > 0 else 0
         desc = f"กราฟนี้แสดงการกระจายของข้อมูลที่ขาดหาย (NaN) ก่อนดำเนินการใด ๆ รวมทั้งหมด {nan_count_before_all} ค่า ({file_name}) "
         if nan_count_before_all > 0:
             desc += f"คอลัมน์ที่มี NaN มากที่สุดคือ '{nan_max_col_before_all}' ({nan_max_val_before_all} ค่า) "
             if nan_max_val_before_all > df.shape[0] * 0.5:
-                desc += (
-                    " ซึ่งมากกว่า 50% ของข้อมูล แสดงถึงการขาดหายในช่วงต้นหรือปลายข้อมูลเป็นส่วนใหญ่ "
-                )
+                desc += " ซึ่งมากกว่า 50% ของข้อมูล แสดงถึงการขาดหายในช่วงต้นหรือปลายข้อมูลเป็นส่วนใหญ่ "
             else:
                 desc += " ซึ่งกระจายในบางช่วงเวลาเท่านั้น "
         else:
@@ -354,9 +342,7 @@ class DynamicInputDataset:
                 "abs_correlation": corr_matrix_before["SO2"].abs(),
             }
         )
-        correlation_df_before = correlation_df_before.sort_values(
-            by="abs_correlation", ascending=False
-        )
+        correlation_df_before = correlation_df_before.sort_values(by="abs_correlation", ascending=False)
         add_table(
             doc,
             correlation_df_before,
@@ -389,9 +375,7 @@ class DynamicInputDataset:
         corr_min_before = df.corr()["SO2"].drop("SO2").abs().min()
         corr_min_col_before = df.corr()["SO2"].drop("SO2").abs().idxmin()
         desc = f"กราฟนี้แสดงความสัมพันธ์ระหว่างฟีเจอร์ก่อนดำเนินการ ค่าสหสัมพันธ์สูงสุดกับ SO2 คือ {corr_max_before:.2f} จาก '{corr_max_col_before}' ({file_name}) "
-        desc += (
-            f"ค่าสหสัมพันธ์ต่ำสุดกับ SO2 คือ {corr_min_before:.2f} จาก '{corr_min_col_before}' "
-        )
+        desc += f"ค่าสหสัมพันธ์ต่ำสุดกับ SO2 คือ {corr_min_before:.2f} จาก '{corr_min_col_before}' "
         if corr_max_before > 0.7:
             desc += "แสดงถึงความสัมพันธ์ที่สูงมาก "
         elif corr_max_before > 0.3:
@@ -409,9 +393,7 @@ class DynamicInputDataset:
         plt.figure(figsize=(15, 6))
         boxplot = df.boxplot(figsize=(15, 6))
         plt.xticks(rotation=45, ha="right")
-        plt.title(
-            f"Feature Outlier Distribution (Before Any Processing) - {english_file_name}"
-        )
+        plt.title(f"Feature Outlier Distribution (Before Any Processing) - {english_file_name}")
         plt.savefig(
             self.output_dir / f"eda_boxplot_before_all_{english_file_name}.png",
             dpi=300,
@@ -423,9 +405,7 @@ class DynamicInputDataset:
         for col in df.columns:
             q1, q3 = df[col].quantile(0.25), df[col].quantile(0.75)
             iqr = q3 - q1
-            outlier_count = (
-                (df[col] < (q1 - 1.5 * iqr)) | (df[col] > (q3 + 1.5 * iqr))
-            ).sum()
+            outlier_count = ((df[col] < (q1 - 1.5 * iqr)) | (df[col] > (q3 + 1.5 * iqr))).sum()
             outliers_before[col] = outlier_count
         max_outlier_col_before = max(outliers_before, key=outliers_before.get)
         min_outlier_col_before = min(outliers_before, key=outliers_before.get)
@@ -463,19 +443,13 @@ class DynamicInputDataset:
         )
         plt.close()
 
-        desc = (
-            f"กราฟนี้แสดงการกระจายของแต่ละฟีเจอร์ก่อนดำเนินการในรูปแบบฮิสโตแกรม ({file_name}) "
-        )
+        desc = f"กราฟนี้แสดงการกระจายของแต่ละฟีเจอร์ก่อนดำเนินการในรูปแบบฮิสโตแกรม ({file_name}) "
         skew_max_before = df.skew().abs().max()
         skew_max_col_before = df.skew().abs().idxmax()
         skew_min_before = df.skew().abs().min()
         skew_min_col_before = df.skew().abs().idxmin()
-        desc += (
-            f"ฟีเจอร์ที่มี skewness สูงสุดคือ '{skew_max_col_before}' ({skew_max_before:.2f}) "
-        )
-        desc += (
-            f"ฟีเจอร์ที่มี skewness ต่ำสุดคือ '{skew_min_col_before}' ({skew_min_before:.2f}) "
-        )
+        desc += f"ฟีเจอร์ที่มี skewness สูงสุดคือ '{skew_max_col_before}' ({skew_max_before:.2f}) "
+        desc += f"ฟีเจอร์ที่มี skewness ต่ำสุดคือ '{skew_min_col_before}' ({skew_min_before:.2f}) "
         if skew_max_before > 1:
             desc += "แสดงถึงการกระจายที่เบ้มาก (skewed distribution) "
         elif skew_max_before > 0.5:
@@ -491,9 +465,7 @@ class DynamicInputDataset:
             desc,
         )
 
-        print(
-            "Step 6.3: Creating Timeseries Plot for All Features (Before Any Processing)..."
-        )
+        print("Step 6.3: Creating Timeseries Plot for All Features (Before Any Processing)...")
         n_features = len(df.columns)
         plt.figure(figsize=(15, n_features * 4))
         for i, col in enumerate(df.columns):
@@ -528,30 +500,20 @@ class DynamicInputDataset:
         features_to_drop = [col for col in features_to_drop if col != "SO2"]
         if features_to_drop:
             df = df.drop(columns=features_to_drop)
-            doc.add_paragraph(
-                f"Dropped features (>50% missing, excluding SO2) - {file_name}: {features_to_drop}"
-            )
+            doc.add_paragraph(f"Dropped features (>50% missing, excluding SO2) - {file_name}: {features_to_drop}")
         else:
-            doc.add_paragraph(
-                f"No features with missing > 50% (excluding SO2) to drop - {file_name}."
-            )
+            doc.add_paragraph(f"No features with missing > 50% (excluding SO2) to drop - {file_name}.")
 
         doc.add_heading(
             f"Exploratory Data Analysis (After Removing Missing > 50%, Before Trim and Trim SO2) - {file_name}",
             1,
         )
-        doc.add_paragraph(
-            f"Shape after removing features with missing > 50% (excluding SO2) - {file_name}: {df.shape}"
-        )
-        doc.add_paragraph(
-            f"Missing Values Total after removing features - {file_name}: {df.isnull().sum().sum()}"
-        )
+        doc.add_paragraph(f"Shape after removing features with missing > 50% (excluding SO2) - {file_name}: {df.shape}")
+        doc.add_paragraph(f"Missing Values Total after removing features - {file_name}: {df.isnull().sum().sum()}")
 
         plt.figure(figsize=(12, 6))
         heatmap = sns.heatmap(df.isnull(), cbar=True, cmap="Blues", annot=False)
-        plt.title(
-            f"Missing Data Heatmap (After Removing Missing > 50%, Excluding SO2, Before Trim and Trim SO2) - {english_file_name}"
-        )
+        plt.title(f"Missing Data Heatmap (After Removing Missing > 50%, Excluding SO2, Before Trim and Trim SO2) - {english_file_name}")
         plt.xlabel("Features")
         plt.ylabel("Samples")
         plt.savefig(
@@ -562,19 +524,13 @@ class DynamicInputDataset:
         plt.close()
 
         nan_count_after_remove = df.isnull().sum().sum()
-        nan_max_col_after_remove = (
-            df.isnull().sum().idxmax() if nan_count_after_remove > 0 else "None"
-        )
-        nan_max_val_after_remove = (
-            df.isnull().sum().max() if nan_count_after_remove > 0 else 0
-        )
+        nan_max_col_after_remove = df.isnull().sum().idxmax() if nan_count_after_remove > 0 else "None"
+        nan_max_val_after_remove = df.isnull().sum().max() if nan_count_after_remove > 0 else 0
         desc = f"กราฟนี้แสดงการกระจายของข้อมูลที่ขาดหาย (NaN) หลังลบฟีเจอร์ที่มี Missing > 50% (ไม่รวม SO2) แต่ก่อนตัดทอนและตัดตาม SO2 รวมทั้งหมด {nan_count_after_remove} ค่า ({file_name}) "
         if nan_count_after_remove > 0:
             desc += f"คอลัมน์ที่มี NaN มากที่สุดคือ '{nan_max_col_after_remove}' ({nan_max_val_after_remove} ค่า) "
             if nan_max_val_after_remove > df.shape[0] * 0.5:
-                desc += (
-                    " ซึ่งมากกว่า 50% ของข้อมูล แสดงถึงการขาดหายในช่วงต้นหรือปลายข้อมูลเป็นส่วนใหญ่ "
-                )
+                desc += " ซึ่งมากกว่า 50% ของข้อมูล แสดงถึงการขาดหายในช่วงต้นหรือปลายข้อมูลเป็นส่วนใหญ่ "
             else:
                 desc += " ซึ่งกระจายในบางช่วงเวลาเท่านั้น "
         else:
@@ -595,9 +551,7 @@ class DynamicInputDataset:
                 "abs_correlation": corr_matrix_after_remove["SO2"].abs(),
             }
         )
-        correlation_df_after_remove = correlation_df_after_remove.sort_values(
-            by="abs_correlation", ascending=False
-        )
+        correlation_df_after_remove = correlation_df_after_remove.sort_values(by="abs_correlation", ascending=False)
         add_table(
             doc,
             correlation_df_after_remove,
@@ -615,9 +569,7 @@ class DynamicInputDataset:
             vmax=1,
             fmt=".2f",
         )
-        plt.title(
-            f"Correlation Matrix (After Removing Missing > 50%, Before Trim and Trim SO2) - {english_file_name}"
-        )
+        plt.title(f"Correlation Matrix (After Removing Missing > 50%, Before Trim and Trim SO2) - {english_file_name}")
         plt.xticks(rotation=45, ha="right")
         plt.yticks(rotation=0)
         plt.savefig(
@@ -632,9 +584,7 @@ class DynamicInputDataset:
         corr_min_after = df.corr()["SO2"].drop("SO2").abs().min()
         corr_min_col_after = df.corr()["SO2"].drop("SO2").abs().idxmin()
         desc = f"กราฟนี้แสดงความสัมพันธ์ระหว่างฟีเจอร์หลังลบ Missing > 50% (ไม่รวม SO2) แต่ก่อนตัดทอนและตัดตาม SO2 ค่าสหสัมพันธ์สูงสุดกับ SO2 คือ {corr_max_after:.2f} จาก '{corr_max_col_after}' ({file_name}) "
-        desc += (
-            f"ค่าสหสัมพันธ์ต่ำสุดกับ SO2 คือ {corr_min_after:.2f} จาก '{corr_min_col_after}' "
-        )
+        desc += f"ค่าสหสัมพันธ์ต่ำสุดกับ SO2 คือ {corr_min_after:.2f} จาก '{corr_min_col_after}' "
         if corr_max_after > 0.7:
             desc += "แสดงถึงความสัมพันธ์ที่สูงมาก "
         elif corr_max_after > 0.3:
@@ -652,9 +602,7 @@ class DynamicInputDataset:
         plt.figure(figsize=(15, 6))
         boxplot = df.boxplot(figsize=(15, 6))
         plt.xticks(rotation=45, ha="right")
-        plt.title(
-            f"Feature Outlier Distribution (After Removing Missing > 50%, Before Trim and Trim SO2) - {english_file_name}"
-        )
+        plt.title(f"Feature Outlier Distribution (After Removing Missing > 50%, Before Trim and Trim SO2) - {english_file_name}")
         plt.savefig(
             self.output_dir / f"eda_boxplot_after_remove_{english_file_name}.png",
             dpi=300,
@@ -666,16 +614,10 @@ class DynamicInputDataset:
         for col in df.columns:
             q1, q3 = df[col].quantile(0.25), df[col].quantile(0.75)
             iqr = q3 - q1
-            outlier_count = (
-                (df[col] < (q1 - 1.5 * iqr)) | (df[col] > (q3 + 1.5 * iqr))
-            ).sum()
+            outlier_count = ((df[col] < (q1 - 1.5 * iqr)) | (df[col] > (q3 + 1.5 * iqr))).sum()
             outliers_after_remove[col] = outlier_count
-        max_outlier_col_after = max(
-            outliers_after_remove, key=outliers_after_remove.get
-        )
-        min_outlier_col_after = min(
-            outliers_after_remove, key=outliers_after_remove.get
-        )
+        max_outlier_col_after = max(outliers_after_remove, key=outliers_after_remove.get)
+        min_outlier_col_after = min(outliers_after_remove, key=outliers_after_remove.get)
         desc = f"กราฟนี้แสดงการกระจายและ outlier ของฟีเจอร์หลังลบ Missing > 50% (ไม่รวม SO2) แต่ก่อนตัดทอนและตัดตาม SO2 คอลัมน์ที่มี outlier มากที่สุดคือ '{max_outlier_col_after}' ({outliers_after_remove[max_outlier_col_after]} ค่า) ({file_name}) "
         desc += f"คอลัมน์ที่มี outlier น้อยที่สุดคือ '{min_outlier_col_after}' ({outliers_after_remove[min_outlier_col_after]} ค่า) "
         if outliers_after_remove[max_outlier_col_after] > df.shape[0] * 0.1:
@@ -715,12 +657,8 @@ class DynamicInputDataset:
         skew_max_col_after = df.skew().abs().idxmax()
         skew_min_after = df.skew().abs().min()
         skew_min_col_after = df.skew().abs().idxmin()
-        desc += (
-            f"ฟีเจอร์ที่มี skewness สูงสุดคือ '{skew_max_col_after}' ({skew_max_after:.2f}) "
-        )
-        desc += (
-            f"ฟีเจอร์ที่มี skewness ต่ำสุดคือ '{skew_min_col_after}' ({skew_min_after:.2f}) "
-        )
+        desc += f"ฟีเจอร์ที่มี skewness สูงสุดคือ '{skew_max_col_after}' ({skew_max_after:.2f}) "
+        desc += f"ฟีเจอร์ที่มี skewness ต่ำสุดคือ '{skew_min_col_after}' ({skew_min_after:.2f}) "
         if skew_max_after > 1:
             desc += "แสดงถึงการกระจายที่เบ้มาก (skewed distribution) "
         elif skew_max_after > 0.5:
@@ -741,33 +679,19 @@ class DynamicInputDataset:
             valid_so2 = df["SO2"].notna()
             if valid_so2.sum() > 0:
                 df = df[valid_so2]
-                doc.add_paragraph(
-                    f"Trimmed head/tails based on non-NaN SO2 values - {file_name}. New shape: {df.shape}"
-                )
+                doc.add_paragraph(f"Trimmed head/tails based on non-NaN SO2 values - {file_name}. New shape: {df.shape}")
             else:
-                doc.add_paragraph(
-                    f"No valid SO2 values found after removing missing > 50% - {file_name}. Using all available data."
-                )
+                doc.add_paragraph(f"No valid SO2 values found after removing missing > 50% - {file_name}. Using all available data.")
         else:
-            doc.add_paragraph(
-                f"SO2 column not found or all NaN after removing missing > 50% - {file_name}. Using all available data."
-            )
+            doc.add_paragraph(f"SO2 column not found or all NaN after removing missing > 50% - {file_name}. Using all available data.")
 
-        doc.add_heading(
-            f"Exploratory Data Analysis (After Trimming Based on SO2) - {file_name}", 1
-        )
-        doc.add_paragraph(
-            f"Shape after trimming based on SO2 - {file_name}: {df.shape}"
-        )
-        doc.add_paragraph(
-            f"Missing Values Total after trimming - {file_name}: {df.isnull().sum().sum()}"
-        )
+        doc.add_heading(f"Exploratory Data Analysis (After Trimming Based on SO2) - {file_name}", 1)
+        doc.add_paragraph(f"Shape after trimming based on SO2 - {file_name}: {df.shape}")
+        doc.add_paragraph(f"Missing Values Total after trimming - {file_name}: {df.isnull().sum().sum()}")
 
         plt.figure(figsize=(12, 6))
         heatmap = sns.heatmap(df.isnull(), cbar=True, cmap="Blues", annot=False)
-        plt.title(
-            f"Missing Data Heatmap (After Trimming Based on SO2) - {english_file_name}"
-        )
+        plt.title(f"Missing Data Heatmap (After Trimming Based on SO2) - {english_file_name}")
         plt.xlabel("Features")
         plt.ylabel("Samples")
         plt.savefig(
@@ -778,19 +702,13 @@ class DynamicInputDataset:
         plt.close()
 
         nan_count_after_trim_so2 = df.isnull().sum().sum()
-        nan_max_col_after_trim_so2 = (
-            df.isnull().sum().idxmax() if nan_count_after_trim_so2 > 0 else "None"
-        )
-        nan_max_val_after_trim_so2 = (
-            df.isnull().sum().max() if nan_count_after_trim_so2 > 0 else 0
-        )
+        nan_max_col_after_trim_so2 = df.isnull().sum().idxmax() if nan_count_after_trim_so2 > 0 else "None"
+        nan_max_val_after_trim_so2 = df.isnull().sum().max() if nan_count_after_trim_so2 > 0 else 0
         desc = f"กราฟนี้แสดงการกระจายของข้อมูลที่ขาดหาย (NaN) หลังตัดทอนตาม SO2 รวมทั้งหมด {nan_count_after_trim_so2} ค่า ({file_name}) "
         if nan_count_after_trim_so2 > 0:
             desc += f"คอลัมน์ที่มี NaN มากที่สุดคือ '{nan_max_col_after_trim_so2}' ({nan_max_val_after_trim_so2} ค่า) "
             if nan_max_val_after_trim_so2 > df.shape[0] * 0.5:
-                desc += (
-                    " ซึ่งมากกว่า 50% ของข้อมูล แสดงถึงการขาดหายในช่วงต้นหรือปลายข้อมูลเป็นส่วนใหญ่ "
-                )
+                desc += " ซึ่งมากกว่า 50% ของข้อมูล แสดงถึงการขาดหายในช่วงต้นหรือปลายข้อมูลเป็นส่วนใหญ่ "
             else:
                 desc += " ซึ่งกระจายในบางช่วงเวลาเท่านั้น "
         else:
@@ -803,9 +721,7 @@ class DynamicInputDataset:
             desc,
         )
 
-        print(
-            "Step 6.6: Showing Simple Data Sample (10 Rows) After Trimming/Remove Missing..."
-        )
+        print("Step 6.6: Showing Simple Data Sample (10 Rows) After Trimming/Remove Missing...")
         df_head_after = df.head(10)
         add_table(
             doc,
@@ -815,9 +731,7 @@ class DynamicInputDataset:
         )
 
         print("Step 6.7: Computing Data Information (After Trimming/Remove Missing)...")
-        doc.add_heading(
-            f"Data Information (After Trimming/Remove Missing) - {file_name}", 1
-        )
+        doc.add_heading(f"Data Information (After Trimming/Remove Missing) - {file_name}", 1)
         table = doc.add_table(rows=1, cols=9)
         table.style = "Table Grid"
         table.style.border_width = 1
@@ -837,39 +751,17 @@ class DynamicInputDataset:
             row_cells = table.add_row().cells
             row_cells[0].text = col
             row_cells[1].text = str(df[col].count())
-            row_cells[2].text = (
-                str(df[col].mean()) if pd.api.types.is_numeric_dtype(df[col]) else "N/A"
-            )
-            row_cells[3].text = (
-                str(df[col].std()) if pd.api.types.is_numeric_dtype(df[col]) else "N/A"
-            )
-            row_cells[4].text = (
-                str(df[col].min()) if pd.api.types.is_numeric_dtype(df[col]) else "N/A"
-            )
-            row_cells[5].text = (
-                str(df[col].quantile(0.25))
-                if pd.api.types.is_numeric_dtype(df[col])
-                else "N/A"
-            )
-            row_cells[6].text = (
-                str(df[col].median())
-                if pd.api.types.is_numeric_dtype(df[col])
-                else "N/A"
-            )
-            row_cells[7].text = (
-                str(df[col].quantile(0.75))
-                if pd.api.types.is_numeric_dtype(df[col])
-                else "N/A"
-            )
-            row_cells[8].text = (
-                str(df[col].max()) if pd.api.types.is_numeric_dtype(df[col]) else "N/A"
-            )
+            row_cells[2].text = str(df[col].mean()) if pd.api.types.is_numeric_dtype(df[col]) else "N/A"
+            row_cells[3].text = str(df[col].std()) if pd.api.types.is_numeric_dtype(df[col]) else "N/A"
+            row_cells[4].text = str(df[col].min()) if pd.api.types.is_numeric_dtype(df[col]) else "N/A"
+            row_cells[5].text = str(df[col].quantile(0.25)) if pd.api.types.is_numeric_dtype(df[col]) else "N/A"
+            row_cells[6].text = str(df[col].median()) if pd.api.types.is_numeric_dtype(df[col]) else "N/A"
+            row_cells[7].text = str(df[col].quantile(0.75)) if pd.api.types.is_numeric_dtype(df[col]) else "N/A"
+            row_cells[8].text = str(df[col].max()) if pd.api.types.is_numeric_dtype(df[col]) else "N/A"
         desc = f"ตารางนี้แสดงข้อมูลพื้นฐานของข้อมูลหลังลบฟีเจอร์ที่มี Missing > 50% และตัดทอนตาม SO2 ค่าที่ไม่ใช่ตัวเลขจะแสดง N/A ({file_name})"
         doc.add_paragraph(desc)
 
-        print(
-            "Step 6.8: Creating Statistical Summary Table (After Trimming/Remove Missing)..."
-        )
+        print("Step 6.8: Creating Statistical Summary Table (After Trimming/Remove Missing)...")
         doc.add_heading(
             f"Statistical Summary Table (After Trimming/Remove Missing) - {file_name}",
             1,
@@ -893,41 +785,13 @@ class DynamicInputDataset:
                 row_cells_stats = table_stats.add_row().cells
                 row_cells_stats[0].text = col
                 row_cells_stats[1].text = str(df[col].count())
-                row_cells_stats[2].text = (
-                    str(df[col].mean())
-                    if pd.api.types.is_numeric_dtype(df[col])
-                    else "N/A"
-                )
-                row_cells_stats[3].text = (
-                    str(df[col].std())
-                    if pd.api.types.is_numeric_dtype(df[col])
-                    else "N/A"
-                )
-                row_cells_stats[4].text = (
-                    str(df[col].min())
-                    if pd.api.types.is_numeric_dtype(df[col])
-                    else "N/A"
-                )
-                row_cells_stats[5].text = (
-                    str(df[col].quantile(0.25))
-                    if pd.api.types.is_numeric_dtype(df[col])
-                    else "N/A"
-                )
-                row_cells_stats[6].text = (
-                    str(df[col].median())
-                    if pd.api.types.is_numeric_dtype(df[col])
-                    else "N/A"
-                )
-                row_cells_stats[7].text = (
-                    str(df[col].quantile(0.75))
-                    if pd.api.types.is_numeric_dtype(df[col])
-                    else "N/A"
-                )
-                row_cells_stats[8].text = (
-                    str(df[col].max())
-                    if pd.api.types.is_numeric_dtype(df[col])
-                    else "N/A"
-                )
+                row_cells_stats[2].text = str(df[col].mean()) if pd.api.types.is_numeric_dtype(df[col]) else "N/A"
+                row_cells_stats[3].text = str(df[col].std()) if pd.api.types.is_numeric_dtype(df[col]) else "N/A"
+                row_cells_stats[4].text = str(df[col].min()) if pd.api.types.is_numeric_dtype(df[col]) else "N/A"
+                row_cells_stats[5].text = str(df[col].quantile(0.25)) if pd.api.types.is_numeric_dtype(df[col]) else "N/A"
+                row_cells_stats[6].text = str(df[col].median()) if pd.api.types.is_numeric_dtype(df[col]) else "N/A"
+                row_cells_stats[7].text = str(df[col].quantile(0.75)) if pd.api.types.is_numeric_dtype(df[col]) else "N/A"
+                row_cells_stats[8].text = str(df[col].max()) if pd.api.types.is_numeric_dtype(df[col]) else "N/A"
         desc_stats = f"ตารางนี้แสดงสถิติพื้นฐานของข้อมูลหลังลบฟีเจอร์ที่มี Missing > 50% และตัดทอนตาม SO2 ค่าที่ไม่ใช่ตัวเลขจะแสดง N/A ({file_name})"
         doc.add_paragraph(desc_stats)
 
@@ -939,9 +803,7 @@ class DynamicInputDataset:
         scaler_target = None
 
         if len(df) > 0:
-            all_dates = pd.date_range(
-                start=df.index.min(), end=df.index.max(), freq="H"
-            )
+            all_dates = pd.date_range(start=df.index.min(), end=df.index.max(), freq="H")
             df = df.reindex(all_dates).interpolate(method="linear")
             df_trimmed = df.dropna()
             if len(df_trimmed) > 0:
@@ -951,9 +813,7 @@ class DynamicInputDataset:
                     features = [col for col in df_trimmed.columns]
                     scaler_features = MinMaxScaler()
                     scaler_target = MinMaxScaler()
-                    df_trimmed[features] = scaler_features.fit_transform(
-                        df_trimmed[features]
-                    )
+                    df_trimmed[features] = scaler_features.fit_transform(df_trimmed[features])
                     df_trimmed["SO2"] = scaler_target.fit_transform(df_trimmed[["SO2"]])
                     trim_start = df_trimmed.index.min().strftime("%Y-%m-%d %H:%M")
                     trim_end = df_trimmed.index.max().strftime("%Y-%m-%d %H:%M")
@@ -980,14 +840,10 @@ class DynamicInputDataset:
                     if df[features].isnull().any().any() or df["SO2"].isnull().any():
                         df[features] = df[features].fillna(0)
                         df["SO2"] = df["SO2"].fillna(0)
-                        doc.add_paragraph(
-                            f"คำเตือน: ข้อมูลดิบหลังลบ Missing > 50% (ไม่รวม SO2) และตัดตาม SO2 มีค่า NaN ได้รับการแทนที่ด้วย 0 เพื่อดำเนินการต่อ ผลลัพธ์อาจไม่แม่นยำ ({file_name})"
-                        )
+                        doc.add_paragraph(f"คำเตือน: ข้อมูลดิบหลังลบ Missing > 50% (ไม่รวม SO2) และตัดตาม SO2 มีค่า NaN ได้รับการแทนที่ด้วย 0 เพื่อดำเนินการต่อ ผลลัพธ์อาจไม่แม่นยำ ({file_name})")
                     df[features] = scaler_features.fit_transform(df[features])
                     df["SO2"] = scaler_target.fit_transform(df[["SO2"]])
-                    doc.add_paragraph(
-                        f"คำเตือน: ข้อมูลดิบหลังลบ Missing > 50% (ไม่รวม SO2) และตัดตาม SO2 อาจมีค่า NaN หรือไม่สมบูรณ์ ผลลัพธ์อาจไม่แม่นยำ ({file_name})"
-                    )
+                    doc.add_paragraph(f"คำเตือน: ข้อมูลดิบหลังลบ Missing > 50% (ไม่รวม SO2) และตัดตาม SO2 อาจมีค่า NaN หรือไม่สมบูรณ์ ผลลัพธ์อาจไม่แม่นยำ ({file_name})")
             else:
                 desc = f"ไม่มีข้อมูลเหลือหลังการตัดทอน ใช้ข้อมูลดิบหลังลบ Missing > 50% (ไม่รวม SO2) และตัดตาม SO2 แทนเพื่อดำเนินการต่อ ({file_name})"
                 doc.add_paragraph(desc)
@@ -1000,14 +856,10 @@ class DynamicInputDataset:
                 if df[features].isnull().any().any() or df["SO2"].isnull().any():
                     df[features] = df[features].fillna(0)
                     df["SO2"] = df["SO2"].fillna(0)
-                    doc.add_paragraph(
-                        f"คำเตือน: ข้อมูลดิบหลังลบ Missing > 50% (ไม่รวม SO2) และตัดตาม SO2 มีค่า NaN ได้รับการแทนที่ด้วย 0 เพื่อดำเนินการต่อ ผลลัพธ์อาจไม่แม่นยำ ({file_name})"
-                    )
+                    doc.add_paragraph(f"คำเตือน: ข้อมูลดิบหลังลบ Missing > 50% (ไม่รวม SO2) และตัดตาม SO2 มีค่า NaN ได้รับการแทนที่ด้วย 0 เพื่อดำเนินการต่อ ผลลัพธ์อาจไม่แม่นยำ ({file_name})")
                 df[features] = scaler_features.fit_transform(df[features])
                 df["SO2"] = scaler_target.fit_transform(df[["SO2"]])
-                doc.add_paragraph(
-                    f"คำเตือน: ข้อมูลดิบหลังลบ Missing > 50% (ไม่รวม SO2) และตัดตาม SO2 อาจมีค่า NaN หรือไม่สมบูรณ์ ผลลัพธ์อาจไม่แม่นยำ ({file_name})"
-                )
+                doc.add_paragraph(f"คำเตือน: ข้อมูลดิบหลังลบ Missing > 50% (ไม่รวม SO2) และตัดตาม SO2 อาจมีค่า NaN หรือไม่สมบูรณ์ ผลลัพธ์อาจไม่แม่นยำ ({file_name})")
         else:
             desc = f"ไม่สามารถดำเนินการต่อไปได้ เนื่องจากไม่มีข้อมูลหลังลบฟีเจอร์ที่มี Missing > 50% (ไม่รวม SO2) และตัดทอนตาม SO2 ({file_name})"
             doc.add_paragraph(desc)
@@ -1022,9 +874,7 @@ class DynamicInputDataset:
             print(f"X_full shape: {X_full.shape}, y_full shape: {y_full.shape}")
         else:
             print(f"Features not defined. Cannot prepare sequences - {file_name}.")
-            doc.add_paragraph(
-                f"Features not defined due to empty or invalid data. Skipping sequence preparation - {file_name}."
-            )
+            doc.add_paragraph(f"Features not defined due to empty or invalid data. Skipping sequence preparation - {file_name}.")
             doc.save(self.output_dir / f"report_{file_name}_error.docx")
             return
 
@@ -1032,29 +882,19 @@ class DynamicInputDataset:
             if df[features].isnull().any().any() or df["SO2"].isnull().any():
                 df[features] = df[features].fillna(0)
                 df["SO2"] = df["SO2"].fillna(0)
-                doc.add_paragraph(
-                    f"Warning: Flat data for XGBoost contains NaN values, replaced with 0 to proceed. Results may be inaccurate ({file_name})"
-                )
+                doc.add_paragraph(f"Warning: Flat data for XGBoost contains NaN values, replaced with 0 to proceed. Results may be inaccurate ({file_name})")
             X_full_flat = df[features].values
             y_full_flat = df["SO2"].values
-            print(
-                f"X_full_flat shape: {X_full_flat.shape}, y_full_flat shape: {y_full_flat.shape}"
-            )
+            print(f"X_full_flat shape: {X_full_flat.shape}, y_full_flat shape: {y_full_flat.shape}")
         else:
-            print(
-                f"Features not defined. Cannot prepare flat data for XGBoost SHAP - {file_name}."
-            )
-            doc.add_paragraph(
-                f"Features not defined due to empty or invalid data. Skipping XGBoost SHAP analysis - {file_name}."
-            )
+            print(f"Features not defined. Cannot prepare flat data for XGBoost SHAP - {file_name}.")
+            doc.add_paragraph(f"Features not defined due to empty or invalid data. Skipping XGBoost SHAP analysis - {file_name}.")
             doc.save(self.output_dir / f"report_{file_name}_error.docx")
             return
 
         print("Step 8: Training LSTM Model with All Features...")
         doc.add_heading(f"Model Training with LSTM - {file_name}", 1)
-        doc.add_paragraph(
-            f"Model: LSTM\nBatch Size: {self.CONST.BATCH_SIZE}\nEpochs: {self.CONST.EPOCHS}\nSplits: {self.CONST.N_SPLITS}\nFeatures Used: {list(features)} ({file_name})"
-        )
+        doc.add_paragraph(f"Model: LSTM\nBatch Size: {self.CONST.BATCH_SIZE}\nEpochs: {self.CONST.EPOCHS}\nSplits: {self.CONST.N_SPLITS}\nFeatures Used: {list(features)} ({file_name})")
 
         tscv = TimeSeriesSplit(n_splits=self.CONST.N_SPLITS)
         batch_size = self.CONST.BATCH_SIZE
@@ -1073,12 +913,8 @@ class DynamicInputDataset:
             X_train, X_test = X_full[train_idx], X_full[test_idx]
             y_train, y_test = y_full[train_idx], y_full[test_idx]
 
-            train_dataset = tf.data.Dataset.from_tensor_slices(
-                (X_train, y_train)
-            ).batch(batch_size)
-            test_dataset = tf.data.Dataset.from_tensor_slices((X_test, y_test)).batch(
-                batch_size
-            )
+            train_dataset = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size)
+            test_dataset = tf.data.Dataset.from_tensor_slices((X_test, y_test)).batch(batch_size)
 
             tf.keras.backend.clear_session()
 
@@ -1107,30 +943,22 @@ class DynamicInputDataset:
 
             y_pred = model.predict(test_dataset)
             if np.any(np.isnan(y_test)) or np.any(np.isnan(y_pred)):
-                doc.add_paragraph(
-                    f"Warning: y_test or y_pred in Fold {fold + 1} contains NaN values found before inverse transform ({file_name})"
-                )
+                doc.add_paragraph(f"Warning: y_test or y_pred in Fold {fold + 1} contains NaN values found before inverse transform ({file_name})")
                 y_test = np.nan_to_num(y_test, nan=0.0)
                 y_pred = np.nan_to_num(y_pred, nan=0.0)
-                doc.add_paragraph(
-                    f"NaN values in y_test and y_pred replaced with 0 to proceed. Results may be inaccurate ({file_name})"
-                )
+                doc.add_paragraph(f"NaN values in y_test and y_pred replaced with 0 to proceed. Results may be inaccurate ({file_name})")
 
             y_test_inv = scaler_target.inverse_transform(y_test)
             y_pred_inv = scaler_target.inverse_transform(y_pred)
 
             if np.any(np.isnan(y_test_inv)) or np.any(np.isnan(y_pred_inv)):
-                doc.add_paragraph(
-                    f"Warning: y_test_inv or y_pred_inv in Fold {fold + 1} contains NaN values after inverse transform ({file_name})"
-                )
+                doc.add_paragraph(f"Warning: y_test_inv or y_pred_inv in Fold {fold + 1} contains NaN values after inverse transform ({file_name})")
                 mask = ~np.isnan(y_test_inv) & ~np.isnan(y_pred_inv)
                 if np.any(mask):
                     y_test_inv_clean = y_test_inv[mask]
                     y_pred_inv_clean = y_pred_inv[mask]
                 else:
-                    doc.add_paragraph(
-                        f"No valid data in Fold {fold + 1}. Skipping metrics calculation ({file_name})"
-                    )
+                    doc.add_paragraph(f"No valid data in Fold {fold + 1}. Skipping metrics calculation ({file_name})")
                     continue
             else:
                 y_test_inv_clean = y_test_inv
@@ -1177,12 +1005,8 @@ class DynamicInputDataset:
 
             plt.figure(figsize=(12, 6))
             plt.plot(y_test_inv_clean.flatten()[:720], label="Actual")
-            plt.plot(
-                y_pred_inv_clean.flatten()[:720], label="Predicted", linestyle="--"
-            )
-            plt.title(
-                f"Fold {fold + 1} Actual vs Predicted (First 30 Days) - {english_file_name}"
-            )
+            plt.plot(y_pred_inv_clean.flatten()[:720], label="Predicted", linestyle="--")
+            plt.title(f"Fold {fold + 1} Actual vs Predicted (First 30 Days) - {english_file_name}")
             plt.legend()
             plt.savefig(
                 self.output_dir / f"fold_{fold + 1}_pred_{english_file_name}.png",
@@ -1191,9 +1015,7 @@ class DynamicInputDataset:
             )
             plt.close()
 
-            pred_diff = np.abs(
-                y_test_inv_clean.flatten()[:720] - y_pred_inv_clean.flatten()[:720]
-            )
+            pred_diff = np.abs(y_test_inv_clean.flatten()[:720] - y_pred_inv_clean.flatten()[:720])
             max_diff_idx = np.argmax(pred_diff)
             max_diff_date = None
             test_start_idx = test_idx[0]
@@ -1211,9 +1033,7 @@ class DynamicInputDataset:
                     desc += f"จุดที่มีความคลาดเคลื่อนสูงสุด ({pred_diff.max():.2f}) เกิดขึ้นวันที่ {max_diff_date} "
                 else:
                     desc += f"จุดที่มีความคลาดเคลื่อนสูงสุด ({pred_diff.max():.2f}) อยู่นอกขอบเขตวันที่ที่มีข้อมูล "
-                desc += (
-                    "แสดงถึงความคลาดเคลื่อนที่สูงผิดปกติ อาจเกิดจาก noise หรือ outlier ในข้อมูล "
-                )
+                desc += "แสดงถึงความคลาดเคลื่อนที่สูงผิดปกติ อาจเกิดจาก noise หรือ outlier ในข้อมูล "
             else:
                 desc += "การพยากรณ์ส่วนใหญ่ใกล้เคียงกับค่าจริง "
             desc += f"วันที่เริ่มต้นของชุดทดสอบ: {df.index[test_start_idx + seq_length].strftime('%Y-%m-%d %H:%M')}, "
@@ -1232,9 +1052,7 @@ class DynamicInputDataset:
 
         # Add average metrics table into the report
         doc.add_heading(f"แบ่งชุดข้อมูล (Time Series Cross Validation) - {file_name}", 1)
-        doc.add_paragraph(
-            "กราฟนี้แสดงขนาดของชุดข้อมูลที่ถูกแบ่งเป็น Train และ Validation สำหรับแต่ละ Fold โดยแสดงจำนวนข้อมูลและเปอร์เซ็นต์การแบ่ง"
-        )
+        doc.add_paragraph("กราฟนี้แสดงขนาดของชุดข้อมูลที่ถูกแบ่งเป็น Train และ Validation สำหรับแต่ละ Fold โดยแสดงจำนวนข้อมูลและเปอร์เซ็นต์การแบ่ง")
         self.plot_tscv(dataset_size)
         add_figure(
             doc,
@@ -1263,13 +1081,9 @@ class DynamicInputDataset:
             else:
                 desc += "R² อยู่ในระดับปานกลาง "
             desc += "MSE และ MAE สะท้อนระดับของความคลาดเคลื่อนในการพยากรณ์"
-            add_table(
-                doc, avg_metrics, f"Average Metrics Across Folds - {file_name}", desc
-            )
+            add_table(doc, avg_metrics, f"Average Metrics Across Folds - {file_name}", desc)
         else:
-            doc.add_paragraph(
-                f"Cannot calculate average metrics due to no complete data in all folds ({file_name})"
-            )
+            doc.add_paragraph(f"Cannot calculate average metrics due to no complete data in all folds ({file_name})")
 
         # region Step 8.1: Training XGBoost Model with All Features
         # This code should be added to the DynamicInputDataset class between Step 8 and Step 9
@@ -1285,9 +1099,7 @@ class DynamicInputDataset:
         # Build the same model architecture for final prediction
         final_model = Sequential(
             [
-                LSTM(
-                    128, input_shape=(seq_length, len(features)), return_sequences=True
-                ),
+                LSTM(128, input_shape=(seq_length, len(features)), return_sequences=True),
                 Dropout(0.2),
                 LSTM(64),
                 Dropout(0.2),
@@ -1298,19 +1110,13 @@ class DynamicInputDataset:
         final_model.compile(optimizer="adam", loss="mse")
 
         # Create dataset and train on all data
-        full_dataset = tf.data.Dataset.from_tensor_slices((X_full, y_full)).batch(
-            batch_size
-        )
+        full_dataset = tf.data.Dataset.from_tensor_slices((X_full, y_full)).batch(batch_size)
         final_model.fit(full_dataset, epochs=self.CONST.EPOCHS, verbose=1)
 
         # Now predict for the entire dataset
         all_predictions = []
         for i in range(len(df) - seq_length - pred_length + 1):
-            X_input = (
-                df[features]
-                .iloc[i : i + seq_length]
-                .values.reshape(1, seq_length, len(features))
-            )
+            X_input = df[features].iloc[i : i + seq_length].values.reshape(1, seq_length, len(features))
             pred = final_model.predict(X_input)
             # We'll use the first value of each prediction sequence
             all_predictions.append(pred[0][0])
@@ -1320,21 +1126,15 @@ class DynamicInputDataset:
         prediction_df = pd.DataFrame(
             {
                 "Date": prediction_dates,
-                "Actual": df["SO2"]
-                .iloc[seq_length : seq_length + len(all_predictions)]
-                .values,
-                "Predicted": scaler_target.inverse_transform(
-                    np.array(all_predictions).reshape(-1, 1)
-                ).flatten(),
+                "Actual": df["SO2"].iloc[seq_length : seq_length + len(all_predictions)].values,
+                "Predicted": scaler_target.inverse_transform(np.array(all_predictions).reshape(-1, 1)).flatten(),
             }
         )
         prediction_df.set_index("Date", inplace=True)
 
         # Plot the full dataset predictions vs actual
         plt.figure(figsize=(20, 8))
-        plt.plot(
-            prediction_df.index, prediction_df["Actual"], label="Actual", linewidth=1
-        )
+        plt.plot(prediction_df.index, prediction_df["Actual"], label="Actual", linewidth=1)
         plt.plot(
             prediction_df.index,
             prediction_df["Predicted"],
@@ -1362,15 +1162,9 @@ class DynamicInputDataset:
         plt.close()
 
         # Calculate metrics for the full dataset prediction
-        mse_full = mean_squared_error(
-            prediction_df["Actual"].dropna(), prediction_df["Predicted"].dropna()
-        )
-        mae_full = mean_absolute_error(
-            prediction_df["Actual"].dropna(), prediction_df["Predicted"].dropna()
-        )
-        r2_full = r2_score(
-            prediction_df["Actual"].dropna(), prediction_df["Predicted"].dropna()
-        )
+        mse_full = mean_squared_error(prediction_df["Actual"].dropna(), prediction_df["Predicted"].dropna())
+        mae_full = mean_absolute_error(prediction_df["Actual"].dropna(), prediction_df["Predicted"].dropna())
+        r2_full = r2_score(prediction_df["Actual"].dropna(), prediction_df["Predicted"].dropna())
 
         # Display yearly predictions - divide the plot into yearly chunks
         years = prediction_df.index.year.unique()
@@ -1379,19 +1173,13 @@ class DynamicInputDataset:
         min_year = 8
 
         if n_years > 1:
-            plt.figure(
-                figsize=(20, 5 * min(n_years, min_year))
-            )  # Limit to 8 subplots max to avoid too large figures
+            plt.figure(figsize=(20, 5 * min(n_years, min_year)))  # Limit to 8 subplots max to avoid too large figures
 
-            for i, year in enumerate(
-                years[:min_year]
-            ):  # Limit to first 8 years if more
+            for i, year in enumerate(years[:min_year]):  # Limit to first 8 years if more
                 year_data = prediction_df[prediction_df.index.year == year]
 
                 plt.subplot(min(n_years, min_year), 1, i + 1)
-                plt.plot(
-                    year_data.index, year_data["Actual"], label="Actual", linewidth=1
-                )
+                plt.plot(year_data.index, year_data["Actual"], label="Actual", linewidth=1)
                 plt.plot(
                     year_data.index,
                     year_data["Predicted"],
@@ -1406,19 +1194,10 @@ class DynamicInputDataset:
                 plt.grid(True, alpha=0.3)
 
                 # Calculate metrics for each year
-                if (
-                    not year_data["Actual"].dropna().empty
-                    and not year_data["Predicted"].dropna().empty
-                ):
-                    mse_year = mean_squared_error(
-                        year_data["Actual"].dropna(), year_data["Predicted"].dropna()
-                    )
-                    mae_year = mean_absolute_error(
-                        year_data["Actual"].dropna(), year_data["Predicted"].dropna()
-                    )
-                    r2_year = r2_score(
-                        year_data["Actual"].dropna(), year_data["Predicted"].dropna()
-                    )
+                if not year_data["Actual"].dropna().empty and not year_data["Predicted"].dropna().empty:
+                    mse_year = mean_squared_error(year_data["Actual"].dropna(), year_data["Predicted"].dropna())
+                    mae_year = mean_absolute_error(year_data["Actual"].dropna(), year_data["Predicted"].dropna())
+                    r2_year = r2_score(year_data["Actual"].dropna(), year_data["Predicted"].dropna())
                     plt.text(
                         0.02,
                         0.85,
@@ -1468,9 +1247,7 @@ class DynamicInputDataset:
         if n_years > 1:
             desc_yearly = f"กราฟนี้แสดงการเปรียบเทียบระหว่างค่า SO2 จริงและค่าพยากรณ์แยกตามปี ({file_name}) "
             desc_yearly += f"แสดงให้เห็นความแม่นยำของโมเดลในแต่ละช่วงเวลา ทำให้เห็นว่าโมเดลมีความแม่นยำสูงหรือต่ำในช่วงเวลาใด "
-            desc_yearly += (
-                f"ช่วงเวลาที่มีความแม่นยำต่ำอาจบ่งชี้ถึงช่วงที่มีเหตุการณ์ผิดปกติหรือมีความผันผวนสูง"
-            )
+            desc_yearly += f"ช่วงเวลาที่มีความแม่นยำต่ำอาจบ่งชี้ถึงช่วงที่มีเหตุการณ์ผิดปกติหรือมีความผันผวนสูง"
 
             add_figure(
                 doc,
@@ -1505,9 +1282,7 @@ class DynamicInputDataset:
                 random_state=self.CONST.SEED_VALUE,
             )
             if np.any(np.isnan(X_full_flat)) or np.any(np.isnan(y_full_flat)):
-                doc.add_paragraph(
-                    f"Warning: Flat data for XGBoost contains NaN values, replaced with 0 to proceed. Results may be inaccurate ({file_name})"
-                )
+                doc.add_paragraph(f"Warning: Flat data for XGBoost contains NaN values, replaced with 0 to proceed. Results may be inaccurate ({file_name})")
                 X_full_flat = np.nan_to_num(X_full_flat, nan=0.0)
                 y_full_flat = np.nan_to_num(y_full_flat, nan=0.0)
             xgb_model.fit(X_full_flat, y_full_flat)
@@ -1555,9 +1330,7 @@ class DynamicInputDataset:
             plt.close()
 
             bar_plot_path = self.output_dir / f"shap_bar_{english_file_name}.png"
-            beeswarm_plot_path = (
-                self.output_dir / f"shap_beeswarm_{english_file_name}.png"
-            )
+            beeswarm_plot_path = self.output_dir / f"shap_beeswarm_{english_file_name}.png"
 
             max_fi_feature = feature_importance.iloc[0]["Feature"]
             max_fi_value = feature_importance.iloc[0]["Importance"]
@@ -1571,9 +1344,7 @@ class DynamicInputDataset:
             else:
                 desc += "indicating an influence similar to other features "
             desc += "SHAP value distribution shows both positive and negative impacts on the prediction"
-            add_figure(
-                doc, bar_plot_path, f"SHAP Tree Summary Plot (Bar) - {file_name}", desc
-            )
+            add_figure(doc, bar_plot_path, f"SHAP Tree Summary Plot (Bar) - {file_name}", desc)
             add_figure(
                 doc,
                 beeswarm_plot_path,
@@ -1594,9 +1365,7 @@ class DynamicInputDataset:
             )
         else:
             print(f"Features not defined. Skipping SHAP Tree Importance - {file_name}.")
-            doc.add_paragraph(
-                f"Features not defined due to empty or invalid data. Skipping XGBoost SHAP analysis - {file_name}."
-            )
+            doc.add_paragraph(f"Features not defined due to empty or invalid data. Skipping XGBoost SHAP analysis - {file_name}.")
             doc.save(self.output_dir / f"report_{file_name}_error.docx")
             return
 
@@ -1605,20 +1374,14 @@ class DynamicInputDataset:
         if features is not None and len(X_full) > 0:
             last_data = X_full[-1:]
             if np.any(np.isnan(last_data)):
-                doc.add_paragraph(
-                    f"Warning: Data for final prediction contains NaN values, replaced with 0 to proceed. Results may be inaccurate ({file_name})"
-                )
+                doc.add_paragraph(f"Warning: Data for final prediction contains NaN values, replaced with 0 to proceed. Results may be inaccurate ({file_name})")
                 last_data = np.nan_to_num(last_data, nan=0.0)
             pred_next_24 = model.predict(last_data)
             pred_next_24_inv = scaler_target.inverse_transform(pred_next_24)
-            future_timestamps = pd.date_range(start=df.index[-1], periods=25, freq="H")[
-                1:
-            ]
+            future_timestamps = pd.date_range(start=df.index[-1], periods=25, freq="H")[1:]
             actual_last_24 = df["SO2"][-24:].values.reshape(-1, 1)
             if np.any(np.isnan(actual_last_24)):
-                doc.add_paragraph(
-                    f"Warning: Actual data for the last 24 hours contains NaN values, replaced with 0 to proceed. Results may be inaccurate ({file_name})"
-                )
+                doc.add_paragraph(f"Warning: Actual data for the last 24 hours contains NaN values, replaced with 0 to proceed. Results may be inaccurate ({file_name})")
                 actual_last_24 = np.nan_to_num(actual_last_24, nan=0.0)
             actual_last_24_inv = scaler_target.inverse_transform(actual_last_24)
             plt.figure(figsize=(12, 6))
@@ -1662,12 +1425,8 @@ class DynamicInputDataset:
                 desc,
             )
         else:
-            print(
-                f"Features or X_full not defined. Skipping final prediction - {file_name}."
-            )
-            doc.add_paragraph(
-                f"Features or sequences not defined due to empty or invalid data. Skipping final prediction - {file_name}."
-            )
+            print(f"Features or X_full not defined. Skipping final prediction - {file_name}.")
+            doc.add_paragraph(f"Features or sequences not defined due to empty or invalid data. Skipping final prediction - {file_name}.")
             set_thsarabupsk_font(doc)
             doc.save(self.output_dir / f"report_{file_name}_error.docx")
             return
@@ -1691,8 +1450,6 @@ class DynamicInputDataset:
 
 
 if __name__ == "__main__":
-    input_directory = (
-        "/mnt/e/MayThesis2025/src/labs4/s02_v01_02_clean/output_test_with_so2"
-    )
+    input_directory = "/mnt/e/MayThesis2025/src/labs4/s02_v01_02_clean/output_test_with_so2"
     processor = DynamicInputDataset(input_directory)
     processor.run()
